@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>gps_localize_msgs</name>
+  <version>1.0.0</version>
+  <description>
+    Message definitions shared by the GPS_Localize firmware and the ROS 2 host.
+
+    Kept in its own package because micro-ROS has to compile the type support
+    into the firmware image, and a message package must not depend on anything
+    the microcontroller cannot build.
+  </description>
+  <maintainer email="manman7852078520@gmail.com">Mannaja78520</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

@@ -1,0 +1,42 @@
+{
+  "created": "2026-09-13 20:01:04 +0700",
+  "captures": [
+    {
+      "file": "setup-native-check.png",
+      "title": "NATIVE CHECK - actual read-only output from this Ubuntu PC",
+      "command": "source /opt/ros/humble/setup.bash\nsource \"$HOME/uros_ws/install/local_setup.bash\"\nsource \"${USER_HOME}/GPS_Localize/gps_localize_ws/install/setup.bash\"\npython3 --version\nprintf \"ROS distribution: %s\\n\" \"$ROS_DISTRO\"\nros2 pkg prefix micro_ros_agent\nros2 pkg prefix gps_localize",
+      "exit_code": 0,
+      "displayed_text": "$ source /opt/ros/humble/setup.bash\nsource \"$HOME/uros_ws/install/local_setup.bash\"\nsource \"${USER_HOME}/GPS_Localize/gps_localize_ws/install/setup.bash\"\npython3 --version\nprintf \"ROS distribution: %s\\n\" \"$ROS_DISTRO\"\nros2 pkg prefix micro_ros_agent\nros2 pkg prefix gps_localize\n\nPython 3.10.12\nROS distribution: humble\n${USER_HOME}/uros_ws/install/micro_ros_agent\n${USER_HOME}/GPS_Localize/gps_localize_ws/install/gps_localize\n"
+    },
+    {
+      "file": "setup-launch-options.png",
+      "title": "LAUNCH OPTIONS - inspection only; no server started",
+      "command": "source /opt/ros/humble/setup.bash\nsource \"$HOME/uros_ws/install/local_setup.bash\"\nsource \"${USER_HOME}/GPS_Localize/gps_localize_ws/install/setup.bash\"\nros2 launch gps_localize bringup.launch.py --show-args",
+      "exit_code": 0,
+      "displayed_text": "$ source /opt/ros/humble/setup.bash\nsource \"$HOME/uros_ws/install/local_setup.bash\"\nsource \"${USER_HOME}/GPS_Localize/gps_localize_ws/install/setup.bash\"\nros2 launch gps_localize bringup.launch.py --show-args\n\nArguments (pass arguments as '<name>:=<value>'):\n\n    'transport':\n        no description given\n        (default: 'udp4')\n\n    'agent_port':\n        no description given\n        (default: '8888')\n\n    'serial_device':\n        no description given\n        (default: '/dev/ttyUSB0')\n\n    'domain_id':\n        no description given\n        (default: '10')\n\n    'start_agent':\n        no description given\n        (default: 'true')\n\n    'runtime_config_dir':\n        no description given\n        (default: '~/.gps_localize')\n"
+    },
+    {
+      "file": "setup-install-preview.png",
+      "title": "NATIVE INSTALLER DRY-RUN - no install/start performed (excerpt)",
+      "command": "bash setup/install.sh --native --dry-run",
+      "exit_code": 0,
+      "displayed_text": "$ bash setup/install.sh --native --dry-run\n\n\nGPS_Localize installer\n============================================================\n  warn  dry run: nothing will be changed\n\n[this machine]\n  os          : Ubuntu 22.04.5 LTS\n  arch        : x86_64\n  user        : mannaja\n  OK    ROS 2 humble present\n  OK    docker present and running\n  OK    platformio present\n  OK    passwordless sudo\n\n... excerpt; intervening lines omitted ...\n  would run: sudo systemctl enable --now gps_localize_beacon\n  OK    agent beacon announcing on UDP 8889 - the robot finds us by itself\n  would run: bash -c sed -e 's|__USER__|mannaja|g' -e 's|__PROJECT__|${USER_HOME}/GPS_Localize|g'             '${USER_HOME}/GPS_Localize/gps_localize_ws/src/gps_localize/systemd/gps_localize_netwatch.service' | sudo tee /etc/systemd/system/gps_localize_netwatch.service >/dev/null\n  would run: sudo systemctl daemon-reload\n  would run: sudo systemctl enable --now gps_localize_netwatch\n  OK    the stack will follow this machine onto other networks by itself\n\n[done]\n  OK    install finished\n  \n  web UI : http://192.168.100.28:8080\n  topics : ros2 topic list      (ROS_DOMAIN_ID=10)"
+    },
+    {
+      "file": "wifi-console-reference.png",
+      "title": "WIFI CONSOLE REFERENCE - extracted from source; NOT a board session",
+      "command": null,
+      "exit_code": null,
+      "displayed_text": "Where: USB monitor, 115200 baud, board running wifi firmware.\nCommands below are entered in the monitor, not the Ubuntu shell.\n\ncommands:\n  info                    version, uptime, link and network state\n  params                  every tunable: value, unit, default\n  get <key>               one value\n  set <key> <value>       change one, bounds enforced here\n  reset <key> | reset all restore the compiled-in default\n  wifi                    list known networks (never the passwords)\n  wifi add <ssid> <pass>  add or replace one\n  wifi del <ssid>         forget one\n  wifi first <ssid>       try this one first\n  agent                   where the micro-ROS agent is being looked for\n  agent <host|ip>         point the robot at one; agent auto = discover\n  compass                 heading, field strength and calibration state\n  compass clear           forget the calibration - the way back from a bad one\n\n  there is no save command - every change is written to NVS at once\nok\n\nSSID is one token (no spaces); password is the rest of the line.\nExample: wifi add Workshop24G YOUR_WIFI_PASSWORD\nExample: agent 192.0.2.10  (replace with your server LAN address)\nStop the robot before changing networks. Do not share a real password."
+    },
+    {
+      "file": "wifi-seed-template.png",
+      "title": "WIFI FIRST-BOOT SEED - checked-in EXAMPLE, not private credentials",
+      "command": null,
+      "exit_code": null,
+      "displayed_text": "Where: firmware/config/network_secrets.example.h\nCopy to network_secrets.h locally, then edit before the first flash.\nExisting saved NVS networks take precedence over the seed.\n\nstatic const WifiNetwork WIFI_NETWORKS[] = {\n    { \"YOUR_WIFI_NAME\", \"YOUR_WIFI_PASSWORD\" },\n    // { \"my-phone-hotspot\", \"hotspotpass\" },\n    // { \"field-router\",     \"fieldpass\"   },\n    // { \"OpenGuestWiFi\",    \"\"            },\n};\n\n\n// Password for wireless firmware updates. Anything on the network can reach the\n// OTA port, and an unauthenticated one is a way to put arbitrary code on a\n// machine that drives itself around - so this is not decoration. Change it.\n#ifndef OTA_PASSWORD\n#define OTA_PASSWORD \"CHANGE_ME\"\n#endif\n\n#endif  // NETWORK_SECRETS_H\n"
+    }
+  ],
+  "note": "Actual read-only output rendered by an offscreen VTE terminal; source references are labelled and were not sent to a board.",
+  "path_normalization": "The manifest replaces the personal home path with ${USER_HOME}; PNGs retain displayed output."
+}

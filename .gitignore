@@ -1,0 +1,75 @@
+# --- secrets -------------------------------------------------------------
+# Real Wi-Fi names and passwords. network_secrets.example.h is the committed
+# template; this file is local to each machine and must never be committed.
+firmware/config/network_secrets.h
+
+# --- local working areas -------------------------------------------------
+# _work/ is the staging tree: every edit happens there first and is promoted
+# to the real folders only after QC passes. It is local by design.
+_work/
+# _patches/ holds per-change before/after snapshots and rollback scripts.
+# That is a local safety net, not project history - git provides that.
+_patches/
+_backup/
+
+# --- large binaries kept out of the repo ---------------------------------
+# 364 MB of CAD (STEP / SLDPRT / STL). Lives on this PC and the Windows share.
+model/
+# Frozen Windows viewer build, rebuilt from source when needed.
+webapp/exe/
+
+# --- generated ------------------------------------------------------------
+# Regenerated from tools/plan_state.json on every change.
+plan.html
+
+# --- build output ---------------------------------------------------------
+.pio/
+.pio_workspaces/
+build/
+install/
+log/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# --- editor / OS ----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# --- schematics / hardware drawings --------------------------------------
+# Large exported drawings. Kept locally and on the Windows share.
+SCH_Schematic*
+PNG_Schematic*.zip
+
+# --- tooling state --------------------------------------------------------
+.claude/
+
+# windows test output, regenerated on every run
+windows_test_report.txt
+windows_test_report.json
+
+_relay/
+
+# AI and Agent files (kept locally for debugging but not pushed)
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+HANDOFF.md
+audit_*
+claude_*
+gemini_*
+gpt_*
+.agents/
+.claude/
+.codex/
+_relay/
+tools/agent_relay.sh
+tools/plan_state.json
+tools/planhtml.py
+docs/windows_handoff.md
+pio_test_output.txt

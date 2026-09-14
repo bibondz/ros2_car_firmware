@@ -1,0 +1,184 @@
+{
+  "created": "2026-09-13 19:55:39 +0700",
+  "source_commit": "6ac57eb3ffcf9bce6e82493ee678026d30f3a0d8",
+  "source_sha256": {
+    "index.html": "067750d668a1f86fe107150dd162ab809600b47968707735921348f2d9a75cd3",
+    "app.js": "efac836e00222ea4fc349675fa6fe9e09a75fff9c1532923f5629ed54352ff8a",
+    "style.css": "caed15033cb5a0313a833247188904d127f675946cd1ff8a8ae132916e45ba2a"
+  },
+  "note": "Actual source UI, example telemetry and compiled parameter defaults; no real robot, USB, or ROS access. External requests blocked.",
+  "captures": [
+    {
+      "file": "01-dash.png",
+      "title": "Dashboard",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "02-map.png",
+      "title": "Map",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "03-wp.png",
+      "title": "Waypoints",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "04-cfg.png",
+      "title": "Settings",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "05-calib.png",
+      "title": "Calibration",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "06-geom.png",
+      "title": "Geometry",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "07-board.png",
+      "title": "On the robot",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "08-topics.png",
+      "title": "ROS Topics",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "09-log.png",
+      "title": "Log",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "10-help.png",
+      "title": "Help",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-nav.png",
+      "title": "Settings / nav",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-pid.png",
+      "title": "Settings / pid",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-motor.png",
+      "title": "Settings / motor",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-estimator.png",
+      "title": "Settings / estimator",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-robot.png",
+      "title": "Settings / robot",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-safety.png",
+      "title": "Settings / safety",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "settings-web.png",
+      "title": "Settings / web",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-battery.png",
+      "title": "On the robot / battery",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-compass.png",
+      "title": "On the robot / compass",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-control.png",
+      "title": "On the robot / control",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-estimator.png",
+      "title": "On the robot / estimator",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-geometry.png",
+      "title": "On the robot / geometry",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-gps.png",
+      "title": "On the robot / gps",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-motor.png",
+      "title": "On the robot / motor",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-network.png",
+      "title": "On the robot / network",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "robot-robot.png",
+      "title": "On the robot / robot",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "waypoints-add-row.png",
+      "title": "Waypoints / add an editable row (not saved)",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    },
+    {
+      "file": "topics-watch.png",
+      "title": "Topics / inspect sample telemetry",
+      "kind": "actual UI with labelled example backend",
+      "selector": null
+    }
+  ],
+  "browser_errors": [],
+  "post_paths": [
+    "/api/heartbeat"
+  ]
+}
