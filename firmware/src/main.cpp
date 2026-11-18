@@ -1889,6 +1889,19 @@ static IPAddress resolveAgentIp() {
 static const char *wifi_ssid_active = "";
 static const char *wifi_pass_active = "";
 
+// Register UDP without reconnecting or waiting for Wi-Fi. The convenience
+// wrapper blocks until association and prevents offline console startup.
+static void configureWifiTransport(const IPAddress &target) {
+  static struct micro_ros_agent_locator locator;
+  locator.address = target;
+  locator.port = AGENT_PORT;
+  const rmw_ret_t rc = rmw_uros_set_custom_transport(
+      false, (void *)&locator, platformio_transport_open,
+      platformio_transport_close, platformio_transport_write,
+      platformio_transport_read);
+  if (rc != RMW_RET_OK) Serial.printf("[agent] transport setup failed: %d\n", (int)rc);
+}
+
 static bool wifiConnect(uint32_t timeout_ms = 30000) {
   WiFi.persistent(false);
   WiFi.mode(WIFI_STA);
@@ -1911,7 +1924,7 @@ static bool wifiConnect(uint32_t timeout_ms = 30000) {
   int16_t found = WiFi.scanNetworks(false /*async*/, false /*show hidden*/);
   if (found < 0) found = 0;
   Serial.printf("[WiFi] scan found %d network(s), %u configured\n",
-                (int)found, (unsigned)WIFI_NETWORK_COUNT);
+                (int)found, (unsigned)wifi_store.count());
   // List what is actually in range. Without this, a board that cannot join
   // tells you nothing about what it COULD join, and setup becomes guesswork.
   for (int16_t s_i = 0; s_i < found && s_i < 20; ++s_i) {
@@ -1925,8 +1938,8 @@ static bool wifiConnect(uint32_t timeout_ms = 30000) {
   }
 
   bool tried[WIFI_MAX_NETWORKS] = { false };
-  const size_t table_n = (WIFI_NETWORK_COUNT < WIFI_MAX_NETWORKS)
-                       ? WIFI_NETWORK_COUNT : WIFI_MAX_NETWORKS;
+  const size_t table_n = (wifi_store.count() < WIFI_MAX_NETWORKS)
+                       ? wifi_store.count() : WIFI_MAX_NETWORKS;
 
   for (size_t attempt = 0; attempt < table_n; ++attempt) {
     // pick the strongest configured network that is on the air and untried
@@ -2074,8 +2087,7 @@ static bool consoleSetAgent(void *, const char *host) {
     drive.stop();
     destroyEntities();
   }
-  set_microros_wifi_transports((char *)wifi_ssid_active, (char *)wifi_pass_active,
-                               agent_ip, AGENT_PORT);
+  configureWifiTransport(agent_ip);
   conn_state = WAITING_AGENT;
   create_failures = 0;
   return true;
@@ -2401,9 +2413,9 @@ void setup() {
     Serial.println("       Add a network to firmware/config/network_secrets.h,");
     Serial.println("       or pick one from the scan list above.");
   }
-  agent_ip = resolveAgentIp();
+  agent_ip = WiFi.status() == WL_CONNECTED ? resolveAgentIp() : AGENT_IP;
   beaconBegin();      // start listening before the first ping, not after
-  set_microros_wifi_transports((char *)wifi_ssid_active, (char *)wifi_pass_active, agent_ip, AGENT_PORT);
+  configureWifiTransport(agent_ip);
 
   // Wireless flashing, so a board bolted into the robot never needs a cable
   // again. Only useful once there is a network, hence here rather than earlier.
@@ -2438,6 +2450,7 @@ void setup() {
 
 //================================= loop ====================================//
 void loop() {
+  static uint32_t waiting_agent_sec = 0;
 #if defined(MICROROS_TRANSPORT_WIFI)
   // Serviced first and every pass: an update must be able to land even when the
   // agent is unreachable, which is exactly when a board most needs reflashing.
@@ -2461,6 +2474,23 @@ void loop() {
   // nothing in range does not spend its whole life scanning.
 #if defined(MICROROS_TRANSPORT_WIFI)
   if (WiFi.status() != WL_CONNECTED) {
+    // Disable physical outputs before blocking scans or reconnection.
+    motor_left.disable();
+    motor_right.disable();
+    drive.stop();
+    have_heartbeat = false;
+    SafetyManager::Inputs si;
+    si.sw_estop = sw_estop;
+    si.agent_ok = false;
+    si.heartbeat_age_ms = 0xFFFFFFFF;
+    si.cmd_age_ms = 0xFFFFFFFF;
+    si.battery_valid = false;
+    si.motion_requested = false;
+    safety.update(si);  // open the contactor before session cleanup can block
+    if (conn_state == AGENT_CONNECTED || conn_state == AGENT_DISCONNECTED)
+      destroyEntities();
+    conn_state = WAITING_AGENT;
+    waiting_agent_sec = 0;
     static uint32_t next_wifi_try_ms = 0;
     const uint32_t now_wifi = millis();
     if (now_wifi >= next_wifi_try_ms) {
@@ -2476,10 +2506,13 @@ void loop() {
         beacon_open = false;
         beaconBegin();
         agent_ip = resolveAgentIp();
-        set_microros_wifi_transports((char *)wifi_ssid_active, (char *)wifi_pass_active,
-                                     agent_ip, AGENT_PORT);
+        configureWifiTransport(agent_ip);
         Serial.println("[WiFi] back on the air");
       }
+    }
+    if (WiFi.status() != WL_CONNECTED) {
+      delay(5);
+      return; // Serve the USB console; never ping/reboot while offline.
     }
   }
 #endif
@@ -2497,8 +2530,7 @@ void loop() {
       agent_ip = heard;
       beacon_from = heard;
       agent_dead = IPAddress((uint32_t)0);   // a fresh address deserves a try
-      set_microros_wifi_transports((char *)wifi_ssid_active, (char *)wifi_pass_active,
-                                   agent_ip, AGENT_PORT);
+      configureWifiTransport(agent_ip);
     }
   }
 #endif
@@ -2507,7 +2539,6 @@ void loop() {
     case WAITING_AGENT:
       EXECUTE_EVERY_N_MS(1000, {
         conn_state = (RMW_RET_OK == rmw_uros_ping_agent(500, 5)) ? AGENT_AVAILABLE : WAITING_AGENT;
-        static uint32_t waiting_agent_sec = 0;
         if (conn_state == WAITING_AGENT) {
           if (++waiting_agent_sec >= 60) {
             Serial.println("[agent] 60 seconds without agent ping reply - restarting ESP32 to clear stale IP/session");
@@ -2537,7 +2568,7 @@ void loop() {
             IPAddress fresh = resolveAgentIp();
             if (fresh != agent_ip) {
               agent_ip = fresh;
-              set_microros_wifi_transports((char *)wifi_ssid_active, (char *)wifi_pass_active, agent_ip, AGENT_PORT);
+              configureWifiTransport(agent_ip);
               Serial.printf("[agent] now trying %s\n", agent_ip.toString().c_str());
             }
           }
