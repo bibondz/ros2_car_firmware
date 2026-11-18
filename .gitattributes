@@ -1,0 +1,24 @@
+# Linux scripts must keep LF endings. Without this, a checkout on Windows
+# (core.autocrlf=true) rewrites them to CRLF and they die on the first line
+# with "invalid option name" - which is what happened to setup/*.sh.
+*.sh text eol=lf
+*.py text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.ini text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+
+# Windows-only launchers stay CRLF.
+*.bat text eol=crlf
+
+# Never touch binaries.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.zip binary
+*.bin binary

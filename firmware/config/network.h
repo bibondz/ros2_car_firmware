@@ -127,9 +127,21 @@ static const char* WIFI_HOSTNAME = "esp32-gps-localize";
 #define AGENT_BEACON_PORT 8889
 #define AGENT_BEACON_MAGIC "GPSLOC-AGENT"
 
+// car.irissar.com is a public DNS A record pointing to the VPS that runs
+// micro-ros-agent. The firmware resolves it via plain DNS through whatever
+// the WiFi DHCP hands out (8.8.8.8 / carrier DNS / etc), so the ESP32
+// reaches the agent over the public internet without needing a VPN.
+//
+// Resolution order in resolveAgentIp() is:
+//   1. agent_override  (NVS, settable from the USB console / web UI)
+//   2. AGENT_HOSTNAME  (this)   - mDNS then plain DNS via the DHCP-supplied servers
+//   3. AGENT_IP        (this)   - last-resort fallback, hardcoded
+//   4. last-known-good (NVS)
+//   5. gateway guess
+// mDNS will miss (no .local) so the second step falls through to DNS.
 #define USE_AGENT_HOSTNAME 1
-static const char*     AGENT_HOSTNAME = "mannaja";      // hostname of the Ubuntu PC
-static const IPAddress AGENT_IP(192, 168, 100, 16);     // fallback, DHCP - verify
+static const char*     AGENT_HOSTNAME = "LAPTOP-622AR8LP";   // Windows host (resolves on LAN), forwards udp/8888 to WSL
+static const IPAddress AGENT_IP(192, 168, 0, 3);              // Windows DLink WiFi LAN IP, last resort
 static const uint16_t  AGENT_PORT = 8888;
 // Where the board fetches firmware from when told to pull an update. The
 // host's web server, which is on the same machine as the agent - so the

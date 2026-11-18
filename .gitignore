@@ -73,3 +73,6 @@ tools/plan_state.json
 tools/planhtml.py
 docs/windows_handoff.md
 pio_test_output.txt
+
+# build output
+firmware/bin/
